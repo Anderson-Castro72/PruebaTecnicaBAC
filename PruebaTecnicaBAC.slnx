@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="PruebaBAC.API/PruebaBAC.API.csproj" />
+  <Project Path="PruebaBAC.Web/PruebaBAC.Web.csproj" />
+</Solution>
