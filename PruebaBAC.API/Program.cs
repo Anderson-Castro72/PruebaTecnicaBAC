@@ -1,4 +1,8 @@
+using PruebaBAC.API.Models;
+using PruebaBAC.API.Models;
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<PruebaTecnicaBacContext>();
 
 // Add services to the container.
 
