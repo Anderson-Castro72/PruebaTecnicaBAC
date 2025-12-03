@@ -22,6 +22,7 @@ public partial class PruebaTecnicaBacContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<Venta> Ventas { get; set; }
+    public virtual DbSet<UsuarioSesion> UsuariosSesion { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -29,6 +30,7 @@ public partial class PruebaTecnicaBacContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<UsuarioSesion>().HasNoKey();
         modelBuilder.Entity<DetalleVenta>(entity =>
         {
             entity.HasKey(e => e.IdDe).HasName("PK__DetalleV__B77398C724D4D7DC");
