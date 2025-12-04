@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClosedXML.Excel;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using PruebaBAC.Web.Filtros;
 using PruebaBAC.Web.Models;
 using System.Text;
-using ClosedXML.Excel;
 
 namespace PruebaBAC.Web.Controllers
 {
@@ -92,7 +93,7 @@ namespace PruebaBAC.Web.Controllers
             }
         }
 
-        // 5. ACCIÓN: EXPORTAR EXCEL
+        [ValidarRol("Administrador")]
         public async Task<IActionResult> ExportarExcel()
         {
             List<ReporteVentaViewModel> lista = new List<ReporteVentaViewModel>();
@@ -140,6 +141,7 @@ namespace PruebaBAC.Web.Controllers
                 }
             }
         }
+        [ValidarRol("Administrador")]
         public async Task<IActionResult> ReportePDF()
         {
             List<ReporteVentaViewModel> lista = new List<ReporteVentaViewModel>();

@@ -2,9 +2,11 @@
 using Newtonsoft.Json;
 using PruebaBAC.Web.Models;
 using System.Text;
+using PruebaBAC.Web.Filtros;
 
 namespace PruebaBAC.Web.Controllers
 {
+    [ValidarRol("Administrador")]
     public class ProductosController : Controller
     {
         private readonly HttpClient _httpClient;

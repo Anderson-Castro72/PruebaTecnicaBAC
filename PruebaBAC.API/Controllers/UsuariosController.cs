@@ -18,23 +18,30 @@ namespace PruebaBAC.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO login)
         {
-            var resultado = await _context.UsuariosSesion
-                .FromSqlRaw("EXEC sp_ValidarUsuario {0}, {1}", login.Usuario, login.Password)
-                .ToListAsync();
-
-            var usuario = resultado.FirstOrDefault();
-
-            if (usuario == null)
+            try
             {
-                return Unauthorized("Usuario o contraseña incorrectos");
+                var resultado = await _context.UsuariosSesion
+                    .FromSqlRaw("EXEC sp_ValidarUsuario {0}, {1}", login.Usuario, login.Password)
+                    .ToListAsync();
+
+                var usuario = resultado.FirstOrDefault();
+
+                if (usuario == null)
+                {
+                    return Unauthorized("Usuario o contraseña incorrectos");
+                }
+
+                return Ok(new
+                {
+                    Id = usuario.IdUsuario,
+                    Nombre = usuario.NombreCompleto,
+                    Rol = usuario.Rol
+                });
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                Id = usuario.IdUsuario,
-                Nombre = usuario.NombreCompleto,
-                Rol = usuario.Rol
-            });
+                return BadRequest("Error en el servidor: " + ex.Message);
+            }
         }
     }
 }

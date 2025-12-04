@@ -29,6 +29,13 @@ namespace PruebaBAC.Web.Controllers
                 if (respuesta.IsSuccessStatusCode)
                 {
                     var respuestaJson = await respuesta.Content.ReadAsStringAsync();
+                    dynamic usuario = JsonConvert.DeserializeObject(respuestaJson);
+
+                    string nombre = (string)usuario.nombre ?? "Usuario";
+                    string rol = (string)usuario.rol ?? "Operador";
+
+                    HttpContext.Session.SetString("UsuarioNombre", nombre);
+                    HttpContext.Session.SetString("UsuarioRol", rol);
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -38,6 +45,11 @@ namespace PruebaBAC.Web.Controllers
                     return View(modelo);
                 }
             }
+        }
+        public IActionResult Salir()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
     }
 }
