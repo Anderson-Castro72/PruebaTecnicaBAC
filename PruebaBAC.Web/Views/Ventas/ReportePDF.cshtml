@@ -1,0 +1,108 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model List<PruebaBAC.Web.Models.ReporteVentaViewModel>
+@{
+    Layout = null; // IMPORTANTE: Sin layout para que salga limpio
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reporte de Ventas - BAC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            padding: 40px;
+            font-family: sans-serif;
+        }
+
+        .cabecera {
+            border-bottom: 3px solid #dc3545;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mb-4 no-print text-end">
+        <button onclick="window.print()" class="btn btn-primary btn-lg">🖨 Imprimir / Guardar como PDF</button>
+        <button onclick="window.close()" class="btn btn-secondary btn-lg">Cerrar</button>
+    </div>
+
+    <div class="cabecera d-flex justify-content-between align-items-center">
+        <div>
+            <div class="logo">BAC CREDOMATIC</div>
+            <small>Reporte Oficial de Ventas</small>
+        </div>
+        <div class="text-end">
+            <strong>Fecha de Emisión:</strong><br>
+            @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-danger">
+            <tr>
+                <th>Ticket #</th>
+                <th>Fecha Venta</th>
+                <th>Vendedor</th>
+                <th>Artículos</th>
+                <th class="text-end">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.IdVenta</td>
+                        <td>@item.Fecha.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Vendedor</td>
+                        <td class="text-center">@item.CantidadItems</td>
+                        <td class="text-end fw-bold">$@item.Total.ToString("N2")</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center">No hay datos para mostrar</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="fw-bold fs-5">
+                <td colspan="4" class="text-end">TOTAL GENERAL:</td>
+                <td class="text-end bg-light">$@Model?.Sum(x => x.Total).ToString("N2")</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="mt-5 text-center text-muted" style="font-size: 12px;">
+        <p>Este documento es un reporte generado automáticamente por el sistema de ventas.</p>
+        <p>BAC Credomatic El Salvador</p>
+    </div>
+
+    <script>
+        // window.print();
+    </script>
+</body>
+</html>
