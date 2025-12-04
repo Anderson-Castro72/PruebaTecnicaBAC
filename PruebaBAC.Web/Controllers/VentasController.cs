@@ -19,7 +19,7 @@ namespace PruebaBAC.Web.Controllers
             _httpClient = new HttpClient(handler);
         }
 
-        // 1. PANTALLA PRINCIPAL: LISTADO DE VENTAS 
+
         public async Task<IActionResult> Index()
         {
             List<ReporteVentaViewModel> lista = new List<ReporteVentaViewModel>();
@@ -41,13 +41,13 @@ namespace PruebaBAC.Web.Controllers
             return View(lista);
         }
 
-        // 2. PANTALLA DE REGISTRO
+
         public IActionResult Create()
         {
             return View();
         }
 
-        // 3. ACCIÓN: BUSCAR UN PRODUCTO
+
         [HttpGet]
         public async Task<IActionResult> BuscarProducto(string codigo)
         {
@@ -65,13 +65,13 @@ namespace PruebaBAC.Web.Controllers
             return Json(null);
         }
 
-        // 4. ACCIÓN: REGISTRAR LA VENTA 
         [HttpPost]
         public async Task<IActionResult> Registrar([FromBody] VentaViewModel venta)
         {
             try
             {
-                venta.Vendedor = "Juan Martinez"; 
+                string nombreUsuario = HttpContext.Session.GetString("UsuarioNombre");
+                venta.Vendedor = !string.IsNullOrEmpty(nombreUsuario) ? nombreUsuario : "Operador Genérico";
 
                 var json = JsonConvert.SerializeObject(venta);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");

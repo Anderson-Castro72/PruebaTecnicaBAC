@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PruebaBAC.API.Models;
+using PruebaBAC.API.Utilidades;
 
 namespace PruebaBAC.API.Controllers
 {
@@ -20,8 +21,10 @@ namespace PruebaBAC.API.Controllers
         {
             try
             {
+                string passwordEncriptada = Encriptador.ConvertirSHA256(login.Password);
+
                 var resultado = await _context.UsuariosSesion
-                    .FromSqlRaw("EXEC sp_ValidarUsuario {0}, {1}", login.Usuario, login.Password)
+                    .FromSqlRaw("EXEC sp_ValidarUsuario {0}, {1}", login.Usuario, passwordEncriptada)
                     .ToListAsync();
 
                 var usuario = resultado.FirstOrDefault();
@@ -43,5 +46,28 @@ namespace PruebaBAC.API.Controllers
                 return BadRequest("Error en el servidor: " + ex.Message);
             }
         }
+        [HttpPost("registrar")]
+        public async Task<IActionResult> Registrar([FromBody] RegistroUsuarioDTO modelo)
+        {
+            try
+            {
+                string passwordEncriptada = Encriptador.ConvertirSHA256(modelo.Password);
+
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC sp_RegistrarUsuario {0}, {1}, {2}, {3}",
+                    modelo.NombreUsuario,
+                    passwordEncriptada, 
+                    modelo.NombreCompleto,
+                    modelo.Rol
+                );
+
+                return Ok(new { mensaje = "Usuario registrado correctamente" });
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest("Error al registrar: " + ex.Message);
+            }
+        }   
     }
 }

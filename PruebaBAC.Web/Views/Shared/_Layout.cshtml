@@ -22,9 +22,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-white" asp-controller="Home" asp-action="Index">Inicio</a>
-                        </li>
 
                         @{
                             var rol = HttpContextAccessor.HttpContext.Session.GetString("UsuarioRol");
@@ -40,13 +37,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-controller="Ventas" asp-action="Index">Ventas</a>
                         </li>
-
-                        @if (rol == "Administrador")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Reportes" asp-action="Index">Reportes</a>
-                            </li>
-                        }
                     </ul>
 
                     <span class="navbar-text text-white fw-bold me-3">
