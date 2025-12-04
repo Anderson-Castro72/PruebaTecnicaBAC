@@ -1,0 +1,43 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@model PruebaBAC.Web.Models.ProductoViewModel
+
+@{
+    ViewData["Title"] = "Nuevo Producto";
+}
+
+<div class="card shadow" style="max-width: 600px; margin: auto;">
+    <div class="card-header bg-success text-white">
+        <h4>Registrar Nuevo Producto</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+
+            <div class="mb-3">
+                <label>Código:</label>
+                <input asp-for="Codigo" class="form-control" required placeholder="Ej: 005" />
+            </div>
+
+            <div class="mb-3">
+                <label>Nombre del Producto:</label>
+                <input asp-for="Producto1" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label>Precio:</label>
+                <input asp-for="Precio" type="number" step="0.01" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Guardar</button>
+            <a asp-action="Index" class="btn btn-secondary w-100 mt-2">Cancelar</a>
+        </form>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        }
+    </div>
+</div>

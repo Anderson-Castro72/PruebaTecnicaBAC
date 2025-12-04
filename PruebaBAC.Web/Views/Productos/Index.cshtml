@@ -15,7 +15,7 @@
     </div>
     <div class="card-body">
         <p>
-            <a href="#" class="btn btn-success">Crear Nuevo</a>
+            <a asp-action="Create" class="btn btn-success">Crear Nuevo</a>
         </p>
         <table class="table table-striped table-bordered">
             <thead>
@@ -34,8 +34,12 @@
                         <td>@item.Producto1</td>
                         <td>$ @item.Precio</td>
                         <td>
-                            <button class="btn btn-primary btn-sm">Editar</button>
-                            <button class="btn btn-danger btn-sm">Eliminar</button>
+                            <a asp-action="Edit" asp-route-codigo="@item.Codigo" class="btn btn-primary btn-sm">Editar</a>
+
+                            <a asp-action="Delete" asp-route-id="@item.IdPro" class="btn btn-danger btn-sm"
+                               onclick="return confirm('¿Seguro que desea eliminar este producto?');">
+                                Eliminar
+                            </a>
                         </td>
                     </tr>
                 }
