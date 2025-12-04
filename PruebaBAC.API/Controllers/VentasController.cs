@@ -20,13 +20,10 @@ namespace PruebaBAC.API.Controllers
         [HttpPost("registrar")]
         public async Task<IActionResult> RegistrarVenta([FromBody] VentaDTO ventaDto)
         {
-            // Usamos una transacción: Si falla un detalle, se deshace toda la venta.
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    // 1. Registrar Encabezado y obtener ID
-                    // Configuramos el parámetro de salida para capturar el ID
                     var idVentaParam = new SqlParameter("@IdVenta", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output
@@ -41,7 +38,7 @@ namespace PruebaBAC.API.Controllers
 
                     int idVentaGenerado = (int)idVentaParam.Value;
 
-                    // 2. Registrar cada Detalle
+                    // Registrar cada Detalle
                     foreach (var d in ventaDto.Detalles)
                     {
                         await _context.Database.ExecuteSqlRawAsync(
@@ -63,6 +60,23 @@ namespace PruebaBAC.API.Controllers
                     transaction.Rollback();
                     return BadRequest("Error al registrar venta: " + ex.Message);
                 }
+            }
+        }
+        // GET: api/Ventas/reporte
+        [HttpGet("reporte")]
+        public async Task<ActionResult<IEnumerable<ReporteVentaDTO>>> GetReporte()
+        {
+            try
+            {
+                var reporte = await _context.ReporteVentas
+                    .FromSqlRaw("EXEC sp_ObtenerReporteVentas")
+                    .ToListAsync();
+
+                return Ok(reporte);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error al generar reporte: " + ex.Message);
             }
         }
     }

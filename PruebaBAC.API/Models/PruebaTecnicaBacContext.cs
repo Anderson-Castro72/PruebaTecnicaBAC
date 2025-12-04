@@ -22,6 +22,8 @@ public partial class PruebaTecnicaBacContext : DbContext
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     public virtual DbSet<Venta> Ventas { get; set; }
+
+    public virtual DbSet<ReporteVentaDTO> ReporteVentas { get; set; }
     public virtual DbSet<UsuarioSesion> UsuariosSesion { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -30,6 +32,7 @@ public partial class PruebaTecnicaBacContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<ReporteVentaDTO>().HasNoKey();
         modelBuilder.Entity<UsuarioSesion>().HasNoKey();
         modelBuilder.Entity<DetalleVenta>(entity =>
         {
