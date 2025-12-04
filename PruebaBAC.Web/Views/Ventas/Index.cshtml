@@ -3,201 +3,45 @@
 *@
 @{
 }
+@model List<PruebaBAC.Web.Models.ReporteVentaViewModel>
 @{
-    ViewData["Title"] = "Registro de Ventas";
+    ViewData["Title"] = "Reporte Ventas";
 }
 
 <div class="card shadow">
-    <div class="card-header bg-danger text-white">
-        <h4>Registro de Ventas</h4>
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Historial de Ventas</h4>
+        <div>
+            <a asp-action="ExportarExcel" class="btn btn-success btn-sm">📊 Descargar Excel</a>
+            <a asp-action="Create" class="btn btn-light text-danger fw-bold ms-2">+ Nueva Venta</a>
+        </div>
     </div>
     <div class="card-body">
-
-        <div class="row mb-4 p-3 bg-light border rounded align-items-end">
-            <div class="col-md-3">
-                <label class="fw-bold">Código:</label>
-                <div class="input-group">
-                    <input type="text" id="txtCodigo" class="form-control" placeholder="Ej: 001" />
-                    <button class="btn btn-secondary" onclick="buscarProducto()">🔍</button>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label>Producto:</label>
-                <input type="text" id="txtNombre" class="form-control" readonly />
-                <input type="hidden" id="txtIdProducto" />
-            </div>
-            <div class="col-md-2">
-                <label>Precio:</label>
-                <input type="text" id="txtPrecio" class="form-control" readonly />
-            </div>
-            <div class="col-md-2">
-                <label>Cantidad:</label>
-                <input type="number" id="txtCantidad" class="form-control" value="1" min="1" />
-            </div>
-            <div class="col-md-1">
-                <button class="btn btn-danger w-100" onclick="agregarProducto()">+ Agregar</button>
-            </div>
-        </div>
-
-        <h5>Detalle de ventas (Vendedor: Juan Perez)</h5>
-        <table class="table table-striped table-bordered text-center">
-            <thead class="table-dark">
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <th>Código</th>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
+                    <th>#</th>
+                    <th>Fecha</th>
+                    <th>Vendedor</th>
                     <th>Total</th>
-                    <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="tablaDetalle">
+            <tbody>
+                @if (Model != null)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdVenta</td>
+                            <td>@item.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@item.Vendedor</td>
+                            <td class="fw-bold">$@item.Total.ToString("N2")</td>
+                            <td>
+                            </td>
+                        </tr>
+                    }
+                }
             </tbody>
         </table>
-
-        <div class="row justify-content-end text-end mt-3">
-            <div class="col-md-4">
-                <p class="mb-1">Subtotal: $<span id="lblSubtotal">0.00</span></p>
-                <p class="mb-1">Total IVA: $<span id="lblIva">0.00</span></p>
-                <h3 class="text-danger fw-bold">Total a Pagar: $<span id="lblTotal">0.00</span></h3>
-
-                <button class="btn btn-success w-100 mt-3 py-2 fw-bold" onclick="registrarVenta()">
-                    REGISTRAR VENTA
-                </button>
-            </div>
-        </div>
     </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    let productosEnTabla = [];
-
-
-    async function buscarProducto() {
-        let codigo = document.getElementById("txtCodigo").value;
-        if(!codigo) return;
-
-        let resp = await fetch(`/Ventas/BuscarProducto?codigo=${codigo}`);
-        let data = await resp.json();
-
-        if(data) {
-            document.getElementById("txtIdProducto").value = data.idPro;
-
-            document.getElementById("txtNombre").value = data.producto || data.producto1;
-            document.getElementById("txtPrecio").value = data.precio;
-            document.getElementById("txtCantidad").focus();
-        } else {
-            Swal.fire('Error', 'Producto no encontrado', 'error');
-            limpiarBuscador();
-        }
-    }
-
-    function agregarProducto() {
-        let id = document.getElementById("txtIdProducto").value;
-        let codigo = document.getElementById("txtCodigo").value;
-        let nombre = document.getElementById("txtNombre").value;
-        let precio = parseFloat(document.getElementById("txtPrecio").value);
-        let cantidad = parseInt(document.getElementById("txtCantidad").value);
-
-        if(!id) {
-            Swal.fire('Atención', 'Primero busca un producto válido', 'warning');
-            return;
-        }
-
-        let totalLinea = precio * cantidad;
-        let iva = totalLinea * 0.13; // IVA
-
-        productosEnTabla.push({
-            IdPro: parseInt(id),
-            Codigo: codigo,
-            Nombre: nombre,
-            PrecioUnitario: precio,
-            Cantidad: cantidad,
-            Iva: iva,
-            TotalLinea: totalLinea
-        });
-
-        dibujarTabla();
-        limpiarBuscador();
-    }
-
-    // TABLA
-    function dibujarTabla() {
-        let tbody = document.getElementById("tablaDetalle");
-        tbody.innerHTML = "";
-
-        let sumaTotal = 0;
-        let sumaIva = 0;
-
-        productosEnTabla.forEach((item, index) => {
-            sumaTotal += item.TotalLinea;
-            sumaIva += item.Iva;
-
-            tbody.innerHTML += `
-                <tr>
-                    <td>${item.Codigo}</td>
-                    <td>${item.Nombre}</td>
-                    <td>$${item.PrecioUnitario.toFixed(2)}</td>
-                    <td>${item.Cantidad}</td>
-                    <td>$${item.TotalLinea.toFixed(2)}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-danger" onclick="eliminarFila(${index})">🗑</button>
-                    </td>
-                </tr>
-            `;
-        });
-
-        document.getElementById("lblSubtotal").innerText = (sumaTotal - sumaIva).toFixed(2);
-        document.getElementById("lblIva").innerText = sumaIva.toFixed(2);
-        document.getElementById("lblTotal").innerText = sumaTotal.toFixed(2);
-    }
-
-    function eliminarFila(index) {
-        productosEnTabla.splice(index, 1);
-        dibujarTabla();
-    }
-
-    function limpiarBuscador() {
-        document.getElementById("txtCodigo").value = "";
-        document.getElementById("txtNombre").value = "";
-        document.getElementById("txtPrecio").value = "";
-        document.getElementById("txtIdProducto").value = "";
-        document.getElementById("txtCantidad").value = "1";
-    }
-
-    async function registrarVenta() {
-        if(productosEnTabla.length === 0) {
-            Swal.fire('Error', 'No hay productos para vender', 'warning');
-            return;
-        }
-
-        let totalVenta = parseFloat(document.getElementById("lblTotal").innerText);
-
-        let venta = {
-            Total: totalVenta,
-            Detalles: productosEnTabla
-        };
-
-        try {
-            let resp = await fetch('/Ventas/Registrar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(venta)
-            });
-
-            let resultado = await resp.json();
-
-            if(resultado.exito) {
-                Swal.fire('Éxito', 'Venta registrada correctamente', 'success').then(() => {
-                    productosEnTabla = [];
-                    dibujarTabla();
-                });
-            } else {
-                Swal.fire('Error', resultado.mensaje, 'error');
-            }
-        } catch (error) {
-            Swal.fire('Error', 'Error de comunicación con el servidor', 'error');
-        }
-    }
-</script>
